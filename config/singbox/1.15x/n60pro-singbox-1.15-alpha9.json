@@ -62,6 +62,7 @@
         "rule_set": [
           "fakeipfilter-cn",
           "geosite-cn",
+          "Samsung",
           "geosite-microsoft@cn",
           "geosite-apple@cn",
           "geosite-private"
@@ -128,10 +129,10 @@
         "狮城手动",
         "香港手动",
         "美国手动",
-        "手动选择",
         "流媒体手动",
         "低倍率手动",
-        "自动选择"
+        "自动选择",
+        "直连"
       ],
       "default": "狮城手动"
     },
@@ -142,10 +143,7 @@
         "AI手动",
         "日本手动",
         "狮城手动",
-        "香港手动",
-        "美国手动",
-        "手动选择",
-        "自动选择"
+        "美国手动"
       ],
       "default": "AI手动"
     },
@@ -159,8 +157,7 @@
         "美国手动",
         "手动选择",
         "流媒体手动",
-        "低倍率手动",
-        "自动选择"
+        "低倍率手动"
       ],
       "default": "流媒体手动"
     },
@@ -171,9 +168,7 @@
         "日本手动",
         "狮城手动",
         "香港手动",
-        "美国手动",
-        "手动选择",
-        "自动选择"
+        "美国手动"
       ],
       "default": "狮城手动"
     },
@@ -185,7 +180,6 @@
         "狮城手动",
         "香港手动",
         "美国手动",
-        "手动选择",
         "流媒体手动",
         "低倍率手动",
         "自动选择"
@@ -200,7 +194,6 @@
         "狮城手动",
         "香港手动",
         "美国手动",
-        "手动选择",
         "流媒体手动",
         "低倍率手动",
         "自动选择"
@@ -213,7 +206,6 @@
       "outbounds": [
         "日本手动",
         "狮城手动",
-        "香港手动",
         "美国手动",
         "手动选择",
         "流媒体手动"
@@ -226,7 +218,6 @@
       "outbounds": [
         "日本手动",
         "狮城手动",
-        "香港手动",
         "美国手动",
         "手动选择",
         "流媒体手动"
@@ -265,7 +256,6 @@
       "type": "selector",
       "outbounds": [
         "默认代理",
-        "低倍率手动",
         "直连"
       ],
       "default": "直连"
@@ -275,7 +265,6 @@
       "type": "selector",
       "outbounds": [
         "默认代理",
-        "低倍率手动",
         "直连"
       ],
       "default": "直连"
@@ -300,7 +289,6 @@
         "美国手动",
         "流媒体手动",
         "低倍率手动",
-        "手动选择",
         "自动选择",
         "直连"
       ],
@@ -368,19 +356,6 @@
       "type": "selector",
       "outbounds": [
         "默认代理",
-        "AI",
-        "YouTube",
-        "Google",
-        "Github",
-        "Telegram",
-        "TikTok",
-        "Netflix",
-        "Wallet",
-        "Steam",
-        "Microsoft",
-        "OneDrive",
-        "Apple",
-        "漏网之鱼",
         "日本手动",
         "狮城手动",
         "香港手动",
@@ -545,6 +520,10 @@
         "outbound": "OneDrive"
       },
       {
+        "rule_set": "Samsung",
+        "outbound": "直连"
+      },
+      {
         "rule_set": "geosite-microsoft@cn",
         "outbound": "直连"
       },
@@ -617,7 +596,8 @@
       {
         "tag": [
           "fakeipfilter-cn",
-          "fakeipfilter-!cn"
+          "fakeipfilter-!cn",
+          "Samsung"
         ],
         "type": "remote",
         "format": "source",
@@ -693,16 +673,16 @@
     {
       "tag": "mixed-in",
       "type": "mixed",
-      "listen": "10.0.0.1",
+      "listen": "10.1.1.1",
       "listen_port": 7890
     }
   ],
   "services": [
     {
       "type": "api",
-      "listen": "10.0.0.1",
-      "listen_port": 9090,
-      "secret": "CHANGE_ME",
+      "listen": "::",
+      "listen_port": 9020,
+      "secret": "SINGBOX",
       "dashboard": {
         "enabled": true,
         "path": "/etc/sing-box/dashboard"
@@ -717,12 +697,6 @@
       "store_fakeip": true,
       "buffer_size": "1MB",
       "flush_interval": "1m"
-    },
-    "clash_api": {
-      "external_controller": "10.0.0.1:9095",
-      "external_ui": "/etc/sing-box/ui",
-      "secret": "CHANGE_ME",
-      "default_mode": "Rule"
     }
   },
   "certificate": {
