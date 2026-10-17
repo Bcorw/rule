@@ -2,7 +2,7 @@
 
 ### Docker 部署（bridge 网络，需改防火墙）
 
-```apache
+```yaml
 docker run -d \
 --name=sub-store \
 --restart=always \
@@ -18,7 +18,7 @@ xream/sub-store:latest
 
 ### Docker 部署（host 网络，不用改防火墙）
 
-```apache
+```yaml
 docker run -d \
 --name=sub-store \
 --restart=always \
@@ -34,7 +34,7 @@ xream/sub-store:latest
 
 ### Podman 部署（VPS 等 Linux 服务器）
 
-```apache
+```yaml
 podman run -d \
 --name=sub-store \
 --restart=always \
@@ -50,9 +50,8 @@ docker.io/xream/sub-store:latest
 
 ### Docker 查看启动日志
 
-```apache
-换行折叠复制
-apachedocker logs -f -t --tail 100 sub-store
+```bash
+docker logs -f -t --tail 100 sub-store
 ```
 
 ### OpenWrt Docker 部署报错 `failed to mount ... overlay ... invalid argument`
@@ -62,13 +61,12 @@ apachedocker logs -f -t --tail 100 sub-store
 确认问题：类型显示为 `overlay` 即是此问题。
 
 ```bash
-换行折叠复制
-bashdf -hT /opt/docker
+df -hT /opt/docker
 ```
 
 修改数据目录：
 
-```swift
+```bash
 /etc/init.d/dockerd stop
 uci set dockerd.globals.data_root='/overlay/docker/'
 uci commit dockerd
@@ -78,8 +76,7 @@ uci commit dockerd
 验证：显示 `/overlay/docker` 后重新部署。
 
 ```nginx
-换行折叠复制
-nginxdocker info --format '{{.Driver}} | {{.DockerRootDir}}'
+docker info --format '{{.Driver}} | {{.DockerRootDir}}'
 ```
 
 ### Docker 手动更新
@@ -95,7 +92,7 @@ docker rm -f sub-store
 
 Docker 29 需加 `DOCKER_API_VERSION`。
 
-```apache
+```bash
 docker run -d \
 --name watchtower \
 --restart=always \
