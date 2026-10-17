@@ -218,7 +218,8 @@
                 "默认代理",
                 "直连"
             ],
-            "default": "直连"
+            "default": "直连",
+            "interrupt_exist_connections": true
         },
         {
             "tag": "漏网之鱼",
@@ -241,7 +242,8 @@
                 "香港自动",
                 "香港手动"
             ],
-            "default": "香港自动"
+            "default": "香港自动",
+            "interrupt_exist_connections": true
         },
         {
             "tag": "日本",
@@ -250,7 +252,8 @@
                 "日本自动",
                 "日本手动"
             ],
-            "default": "日本自动"
+            "default": "日本自动",
+            "interrupt_exist_connections": true
         },
         {
             "tag": "狮城",
@@ -259,7 +262,8 @@
                 "狮城自动",
                 "狮城手动"
             ],
-            "default": "狮城自动"
+            "default": "狮城自动",
+            "interrupt_exist_connections": true
         },
         {
             "tag": "美国",
@@ -268,7 +272,8 @@
                 "美国自动",
                 "美国手动"
             ],
-            "default": "美国自动"
+            "default": "美国自动",
+            "interrupt_exist_connections": true
         },
         {
             "tag": "AI",
@@ -277,7 +282,8 @@
                 "AI自动",
                 "AI手动"
             ],
-            "default": "AI手动"
+            "default": "AI手动",
+            "interrupt_exist_connections": true
         },
         {
             "tag": "自动选择",
@@ -286,8 +292,7 @@
             "url": "https://www.gstatic.com/generate_204",
             "interval": "2m",
             "tolerance": 120,
-            "idle_timeout": "30m",
-            "interrupt_exist_connections": true
+            "idle_timeout": "30m"
         },
         {
             "tag": "延迟辅助",
@@ -330,7 +335,8 @@
             "tag": "香港手动",
             "type": "selector",
             "outbounds": [],
-            "default": ""
+            "default": "",
+            "interrupt_exist_connections": true
         },
         {
             "tag": "日本自动",
@@ -345,7 +351,8 @@
             "tag": "日本手动",
             "type": "selector",
             "outbounds": [],
-            "default": ""
+            "default": "",
+            "interrupt_exist_connections": true
         },
         {
             "tag": "狮城自动",
@@ -360,7 +367,8 @@
             "tag": "狮城手动",
             "type": "selector",
             "outbounds": [],
-            "default": ""
+            "default": "",
+            "interrupt_exist_connections": true
         },
         {
             "tag": "美国自动",
@@ -375,7 +383,8 @@
             "tag": "美国手动",
             "type": "selector",
             "outbounds": [],
-            "default": ""
+            "default": "",
+            "interrupt_exist_connections": true
         },
         {
             "tag": "AI自动",
@@ -390,7 +399,8 @@
             "tag": "AI手动",
             "type": "selector",
             "outbounds": [],
-            "default": ""
+            "default": "",
+            "interrupt_exist_connections": true
         }
     ],
     "http_clients": [
@@ -510,7 +520,7 @@
             },
             {
                 "rule_set": "geosite-category-ai-!cn",
-                "outbound": "AI"
+                "outbound": "AI-Serve"
             },
             {
                 "rule_set": "geosite-youtube",
@@ -625,13 +635,11 @@
             "type": "tun",
             "interface_name": "singtun0",
             "address": [
-                "172.19.0.1/30",
-                "fdfe:dcba:9876::1/126"
+                "172.19.0.1/30"
             ],
             "dns_mode": "hijack",
             "dns_address": [
-                "172.19.0.2",
-                "fdfe:dcba:9876::2"
+                "172.19.0.2"
             ],
             "auto_route": true,
             "auto_redirect": true,
@@ -649,8 +657,8 @@
         {
             "type": "api",
             "listen": "::",
-            "listen_port": 9020,
-            "secret": "SINGBOX",
+            "listen_port": 9999,
+            "secret": "",
             "dashboard": {
                 "enabled": true,
                 "path": "/etc/sing-box/dashboard"
