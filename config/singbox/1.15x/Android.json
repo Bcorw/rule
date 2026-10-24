@@ -115,7 +115,7 @@
         ]
       },
       {
-        "tag": "AI",
+        "tag": "AI-Serve",
         "type": "selector",
         "outbounds": [
           "AI手动",
@@ -177,49 +177,7 @@
         "default": "自动选择"
       },
       {
-        "tag": "Steam",
-        "type": "selector",
-        "outbounds": [
-          "日本手动",
-          "狮城手动",
-          "香港手动",
-          "美国手动",
-          "手动选择",
-          "自动选择",
-          "直连"
-        ],
-        "default": "香港手动"
-      },
-      {
         "tag": "Microsoft",
-        "type": "selector",
-        "outbounds": [
-          "日本手动",
-          "狮城手动",
-          "香港手动",
-          "美国手动",
-          "手动选择",
-          "自动选择",
-          "直连"
-        ],
-        "default": "直连"
-      },
-      {
-        "tag": "OneDrive",
-        "type": "selector",
-        "outbounds": [
-          "日本手动",
-          "狮城手动",
-          "香港手动",
-          "美国手动",
-          "手动选择",
-          "自动选择",
-          "直连"
-        ],
-        "default": "直连"
-      },
-      {
-        "tag": "Apple",
         "type": "selector",
         "outbounds": [
           "日本手动",
@@ -499,14 +457,6 @@
                 "outbound": "Telegram"
             },
             {
-                "rule_set": "geosite-steam@cn",
-                "outbound": "直连"
-            },
-            {
-                "rule_set": "geosite-steam",
-                "outbound": "Steam"
-            },
-            {
                 "rule_set": "geosite-cn",
                 "outbound": "直连"
             },
@@ -544,8 +494,6 @@
                     "geosite-microsoft",
                     "geosite-microsoft@cn",
                     "geosite-telegram",
-                    "geosite-steam@cn",
-                    "geosite-steam",
                     "geosite-geolocation-!cn",
                     "geosite-cn",
                     "geosite-private",
