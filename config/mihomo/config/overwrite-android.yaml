@@ -12,6 +12,12 @@ profile:
   store-selected: true
   store-fake-ip: true
 
+external-controller: 0.0.0.0:9090
+secret: ""
+external-ui: ui
+external-ui-name: zashboard
+external-ui-url: "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip"
+
 # 嗅探：帮助硬编码 IP / 缓存 IP 连接恢复域名信息
 sniffer:
   enable: true
