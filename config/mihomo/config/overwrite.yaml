@@ -12,7 +12,7 @@ find-process-mode: off
 # 控制器监听所有接口供局域网面板访问；部署前必须替换为自己的随机密钥，
 # 并通过路由器防火墙限制 9060 端口仅 LAN 可访问。
 external-controller: 0.0.0.0:9060
-secret: "hmibdmXvYws1rjeXd_3hELLDPvk2oriknhacq0pDLk-GOZbz"
+secret: ""
 external-ui: ui
 external-ui-url: "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip"
 
