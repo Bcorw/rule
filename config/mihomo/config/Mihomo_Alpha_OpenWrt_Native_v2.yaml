@@ -1,6 +1,5 @@
 # OpenWrt: 若 dnsmasq 管理局域网 DNS，可将其上游指向 127.0.0.1#1053；须检查其 IPv6 RA/DHCPv6 DNS 下发。
 # Mihomo Alpha (2026-10-25) / Sub-Store 覆写 / 直接运行 Mihomo 内核
-# 基于原 Claude 可运行配置做小范围修订，不含订阅节点；从 Sub-Store 合并 proxies。
 # DNS 双栈的 IPv6 开启 ≠ 所有节点都拥有真实 IPv6 出口。
 mode: rule
 log-level: info
@@ -8,8 +7,7 @@ ipv6: true
 unified-delay: true
 find-process-mode: off
 allow-lan: false
-# 管理端口默认仅 localhost 可访问，避免原版 0.0.0.0 + secret 空值暴露。
-external-controller: 127.0.0.1:9060
+external-controller: 0.0.0.0:9060
 secret: ''
 external-ui: ui
 external-ui-url: 'https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip'
