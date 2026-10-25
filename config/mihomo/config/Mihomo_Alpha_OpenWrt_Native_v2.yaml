@@ -7,7 +7,7 @@ ipv6: true
 unified-delay: true
 find-process-mode: off
 allow-lan: false
-external-controller: 0.0.0.0:9060
+external-controller: 0.0.0.0:9955
 secret: ''
 external-ui: ui
 external-ui-url: 'https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip'
