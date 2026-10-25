@@ -4,7 +4,6 @@
 # Root 启动脚本和上游 IPv6 网络；务必完成路由与抓包验收。
 # 从用户已经能够正常运行的 Claude 基线出发，小范围修订。
 # Mihomo Alpha (2026-10-25) / Sub-Store 覆写 / 直接运行 Mihomo 内核
-# 基于原 Claude 可运行配置做小范围修订，不含订阅节点；从 Sub-Store 合并 proxies。
 # DNS 双栈的 IPv6 开启 ≠ 所有节点都拥有真实 IPv6 出口。
 mode: rule
 log-level: info
@@ -13,8 +12,8 @@ unified-delay: true
 find-process-mode: off
 allow-lan: false
 # 只允许本机访问；Android 本机其它 App 也可访问 loopback，因此 API 仍应有密钥。
-external-controller: 127.0.0.1:9060
-secret: 'uTjCIwtWygyFtxacfLyR2_DsJLmy9Iqd6DsnyCElTEc'
+external-controller: 127.0.0.1:9999
+secret: ''
 external-ui: ui
 external-ui-url: 'https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip'
 profile:
