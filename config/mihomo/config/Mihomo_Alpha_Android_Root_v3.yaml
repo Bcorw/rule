@@ -11,7 +11,6 @@ ipv6: true
 unified-delay: true
 find-process-mode: off
 allow-lan: false
-# 只允许本机访问；Android 本机其它 App 也可访问 loopback，因此 API 仍应有密钥。
 external-controller: 127.0.0.1:9999
 secret: ''
 external-ui: ui
