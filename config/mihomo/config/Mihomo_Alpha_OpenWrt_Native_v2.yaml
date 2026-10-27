@@ -5,8 +5,7 @@ mode: rule
 log-level: info
 ipv6: true
 find-process-mode: off
-allow-lan: true
-mixed-port: 7890
+allow-lan: false
 unified-delay: true
 tcp-concurrent: true
 # 管理端口默认仅 localhost 可访问，避免原版 0.0.0.0 + secret 空值暴露。
@@ -116,6 +115,7 @@ proxy-groups:
   - name: AI
     type: select
     proxies: [AI-稳定, AI-自动]
+    include-all-proxies: true
     exclude-filter: &a_sv '(?i)^\[L\]|^\[K\].*(香港|香江|Hong Kong|🇭🇰)|^\[N\].*(香港|香江|🇭🇰|流量|双鱼座)'
 
   # 通用服务组
