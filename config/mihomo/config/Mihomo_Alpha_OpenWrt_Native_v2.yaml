@@ -65,6 +65,10 @@ dns:
     - DOMAIN-SUFFIX,home.arpa,real-ip
     - RULE-SET,private_domain,real-ip
     - RULE-SET,cn_domain,real-ip
+    # Chrome Web Store: avoid Chromium LNA rejecting IPv6 Fake-IP (ULA) icon/package requests.
+    - DOMAIN,lh3.googleusercontent.com,real-ip
+    - DOMAIN,clients2.google.com,real-ip
+    - DOMAIN,clients2.googleusercontent.com,real-ip
     - MATCH,fake-ip
   # 原版只为 bootstrap 使用明文解析。改为加密的 IP 字面量 DNS 减少此类泄露。
   default-nameserver:
