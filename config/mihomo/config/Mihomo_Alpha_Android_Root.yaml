@@ -1,13 +1,10 @@
 # Android ROOT / Magisk / KernelSU，Mihomo Alpha 直接运行专用版（2026-10-25）
 # 注意：这是一份 Sub-Store 覆写模板，需要与实际节点合并才是可运行配置。
 # 防泄漏不仅取决于 YAML，还取决于 Android netd、策略路由、Private DNS、
-# Root 启动脚本和上游 IPv6 网络；务必完成路由与抓包验收。
-# 从用户已经能够正常运行的 Claude 基线出发，小范围修订。
 # Mihomo Alpha (2026-10-25) / Sub-Store 覆写 / 直接运行 Mihomo 内核
-# DNS 双栈的 IPv6 开启 ≠ 所有节点都拥有真实 IPv6 出口。
 mode: rule
 log-level: info
-ipv6: true
+ipv6: false
 unified-delay: true
 tcp-concurrent: true
 find-process-mode: off
@@ -38,7 +35,6 @@ sniffer:
 
 # Root 裸核会直接创建 TUN、安装路由；不要依赖 Android VpnService。
 # 不能把 auto-redirect 理解为 IPv6 透明接管：官方限定 Android 只转发本机 IPv4。
-# IPv6 需检查实际 ip -6 rule / route 以及 Wi-Fi/移动网络切换结果。
 tun:
   enable: true
   stack: mips
@@ -48,21 +44,19 @@ tun:
   auto-detect-interface: true
   strict-route: true
   dns-mode: hijack
-  inet6-address: ['fdfe:dcba:9876::1/126']
 
 dns:
   enable: true
   # 可用于本机单独测试 DNS，不向 LAN/移动网络开放端口。
   listen: 127.0.0.1:1053
   cache-algorithm: arc
-  ipv6: true
+  ipv6: false
   respect-rules: true
   prefer-h3: false
   use-hosts: true
   use-system-hosts: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  fake-ip-range6: 'fdfe:dcba:9876::/64'
   fake-ip-filter-mode: rule
   fake-ip-filter:
     - RULE-SET,fakeipfilter_cn,real-ip
