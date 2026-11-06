@@ -1,325 +1,161 @@
-
-# ============================================================
-# Honk - Netcore N60 Pro
-# 国内 IPv4/IPv6 双栈直连
-# 海外代理 IPv4 优先，拒绝海外 AAAA
-# DNS: 国内 AliDNS DoH / 海外 Google DoH via Proxy
-# ============================================================
-
 subscription {
-    lxy: 'https://liangxin.xyz' {
-        interval: 24h
+    L: 'https://' {
         cache: true
-        route: Proxy
+        route: direct
         ua: 'clash.meta/1.19.30'
     }
 
-    kitty: 'https://m1.tohno-1.top' {
-        interval: 24h
+    K: 'https://' {
         cache: true
-        route: Proxy
+        route: direct
+        ua: 'clash.meta/1.19.30'
+    }
+
+    N: 'https://' {
+        cache: true
+        route: direct
         ua: 'clash.meta/1.19.30'
     }
 }
 
-# ============================================================
-# 节点组
-# ============================================================
-
+# policy 可选 select（面板手动选，默认）/ min_moving_avg（延迟最低）/ fallback（按顺序取第一个存活）/ loadbalance（轮询）/ score（按实际连接质量评分）；final：所选节点不可用时改走的组
 group {
-
-    # 所有订阅节点：统一排除流量信息、官网、过期等无效节点
     Proxy {
-        filter: subtag('lxy', 'kitty') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
+        filter: subtag('L', 'K') && !name(regex: '(?i)剩余|距离|套餐|到期|官网|排除|expire|traffic')
         policy: score
         final: block
         interrupt_connections: true
     }
-
-    # AI：日本优先，不包含香港节点
     AI {
-        filter: subtag('kitty') && name(regex: '(?i)(?:^|[^a-z0-9])jp(?:[^a-z0-9]|$)|(?:^|[^a-z0-9])jpn(?:[^a-z0-9]|$)|(?:^|[^a-z0-9])japan(?:[^a-z0-9]|$)|(?:^|[^a-z0-9])tokyo(?:[^a-z0-9]|$)|(?:^|[^a-z0-9])osaka(?:[^a-z0-9]|$)|日本|东京|東京|大阪') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
-        default: '🇯🇵Japan 04'
+        filter: subtag('N', 'K') && name(regex: '(?i)🇸🇬|\b(SG|SGP|SIN)\b|新加坡|狮城|獅城|Singapore|🇯🇵|JP|jp|日本|日|Japan|🇺🇸|US|美国|美|United States') && !name(regex: '(?i)流量|教育|双鱼座剩余|距离|套餐|到期|官网|排除|expire|traffic')
         policy: score
+        default: '🇸🇬Singapore 04'
         final: block
         interrupt_connections: true
     }
-
-    # YouTube：香港节点
     YouTube {
-        filter: subtag('lxy', 'kitty') && name(regex: '(?i)🇭🇰|\b(HK|HKG)\b|香港|港|Hong ?Kong') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
+        filter: subtag('L', 'K') && name(regex: '(?i)🇭🇰|\b(HK|HKG)\b|香港|港|Hong ?Kong') && !name(regex: '(?i)剩余|距离|套餐|到期|官网|排除|expire|traffic')
         policy: score
         final: block
         interrupt_connections: true
     }
-
-    # Google：新加坡
     Google {
-        filter: subtag('lxy', 'kitty') && name(regex: '(?i)🇸🇬|\b(SG|SGP|SIN)\b|新加坡|狮城|獅城|Singapore') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
-        default: '🇸🇬Singapore 01'
+        filter: subtag('L', 'K') && name(regex: '(?i)🇸🇬|\b(SG|SGP|SIN)\b|新加坡|狮城|獅城|Singapore') && !name(regex: '(?i)剩余|距离|套餐|到期|官网|排除|expire|traffic')
         policy: score
         final: block
         interrupt_connections: true
     }
-
-    # GitHub：多地区节点
     Github {
-        filter: subtag('lxy', 'kitty') && name(regex: '(?i)🇭🇰|🇹🇼|🇯🇵|🇸🇬|\b(HK|HKG|Hong ?Kong|TW|TPE|Taiwan|Taipei|JP|JPN|Japan|Tokyo|Osaka|NRT|HND|KIX|SG|SGP|Singapore|SIN)\b|香港|港|台湾|台灣|臺灣|台北|日本|东京|東京|大阪|新加坡|狮城|獅城') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
-        default: '🇸🇬新加坡高速05|BGP|CTCUCM'
-        policy: score
-        final: block
+        filter: subtag('L', 'K') && name(regex: '🇯🇵|JP|jp|日本|日|Japan') && !name(regex: '剩余|距离|套餐|到期|官网|排除|expire|traffic')
+        final: Final
         interrupt_connections: true
     }
-
-    # Telegram：香港
     Telegram {
-        filter: subtag('lxy', 'kitty') && name(regex: '(?i)🇭🇰|\b(HK|HKG)\b|香港|港|Hong ?Kong') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
-        policy: score
-        final: block
+        filter: subtag('L', 'K') && name(regex: '🇯🇵|JP|jp|日本|日|Japan') && !name(regex: '剩余|距离|套餐|到期|官网|排除|expire|traffic')
+        final: Final
         interrupt_connections: true
     }
-
-    # 支付和金融服务：美国
-    Wallet {
-        filter: subtag('lxy', 'kitty') && name(regex: '(?i)🇺🇸|\b(US|USA)\b|美国|美國|美|United States|America') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
-        policy: score
-        final: block
-        interrupt_connections: true
-    }
-
-    # Steam：香港
     Steam {
-        filter: subtag('lxy', 'kitty') && name(regex: '(?i)🇭🇰|\b(HK|HKG)\b|香港|港|Hong ?Kong') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
+        filter: subtag('L', 'K') && name(regex: '(?i)🇭🇰|\b(HK|HKG)\b|香港|港|Hong ?Kong') && !name(regex: '(?i)剩余|距离|套餐|到期|官网|排除|expire|traffic')
         policy: score
         final: block
         interrupt_connections: true
     }
-
-    # Microsoft：日本
     Microsoft {
-        filter: subtag('lxy', 'kitty') && name(regex: '(?i)🇯🇵|\b(JP|JPN)\b|日本|东京|東京|大阪|Japan|Tokyo|Osaka') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
-        policy: score
-        final: block
+        filter: subtag('L', 'K') && name(regex: '🇯🇵|JP|jp|日本|日|Japan') && !name(regex: '剩余|距离|套餐|到期|官网|排除|expire|traffic')
+        final: Final
         interrupt_connections: true
     }
-
-    # OneDrive：日本
-    OneDrive {
-        filter: subtag('lxy', 'kitty') && name(regex: '(?i)🇯🇵|\b(JP|JPN)\b|日本|东京|東京|大阪|Japan|Tokyo|Osaka') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
-        policy: score
-        final: block
-        interrupt_connections: true
-    }
-
-    # Apple：香港
-    Apple {
-        filter: subtag('lxy', 'kitty') && name(regex: '(?i)🇭🇰|\b(HK|HKG)\b|香港|港|Hong ?Kong') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
-        policy: score
-        final: block
-        interrupt_connections: true
-    }
-
-    # 最终代理组：全部有效订阅节点
     Final {
-        filter: subtag('lxy', 'kitty') && !name(regex: '(?i)官网|剩余|流量|套餐|免费|订阅|到期|重置|直连|排除|expire|traffic')
+        filter: subtag('L', 'K') && !name(regex: '剩余|距离|套餐|到期|官网|排除|expire|traffic')
         policy: score
-        final: direct
-        interrupt_connections: true
     }
 }
-
-# ============================================================
-# DNS
-# ============================================================
 
 dns {
-    # DNS 与上游域名解析优先 IPv4
-    # 国内域名仍然允许返回 AAAA
-    ipversion_prefer: 4
-
-    # 不自动注入 ECS，减少客户端网络信息暴露
     upstream {
-        cn_dns: 'https://dns.alidns.com/dns-query' -> direct
-        proxy_dns: 'https://dns.google/dns-query' -> Proxy
+        remote: 'https://8.8.8.8/dns-query'
+        local: 'https://223.5.5.5/dns-query'
     }
-
     routing {
         request {
-
-            # 国内及私网域名：国内 DNS
-            qname(geosite: private, geosite: cn, geosite: geolocation-cn, geosite: bilibili, suffix: bilivideo.com, suffix: bilivideo.cn, suffix: hdslb.com, suffix: b23.tv) -> cn_dns
-
-            # AI 和指定海外服务：拒绝 AAAA，避免代理节点收到 IPv6 目标
-            qname(suffix: googleapis.cn, suffix: xn--ngstr-lra8j.com, suffix: withgoogle.com, suffix: notebooklm.google, geosite: category-ai-!cn) && qtype(aaaa) -> reject
-
-            # 上述海外服务经代理 DNS
-            qname(suffix: googleapis.cn, suffix: xn--ngstr-lra8j.com, suffix: withgoogle.com, suffix: notebooklm.google, geosite: category-ai-!cn) -> proxy_dns
-
-            # 其他海外域名不返回 AAAA
-            qname(geosite: geolocation-!cn) && qtype(aaaa) -> reject
-
-            # 其余域名通过代理 DNS
-            fallback: proxy_dns
+            qtype(https, svcb) -> reject
+            qtype(aaaa) -> reject
+            qname(suffix: googleapis.cn, suffix: xn--ngstr-lra8j.com) -> remote
+            qname(geosite: cn, geosite: microsoft@cn, geosite: apple@cn, geosite: private) -> local
+            qname(geosite: geolocation-!cn) -> remote
+            fallback: remote
         }
-
         response {
-            # 不对解析结果进行额外的跨上游重查
+            # remote 解析出国内 IP 时改用 local 重查，拿到就近 CDN
+            upstream(remote) && ip(geoip: cn) -> local
             fallback: accept
         }
     }
 }
 
-# ============================================================
-# 流量路由
-# ============================================================
-
 routing {
-
-    # 私网、国内 IPv4/IPv6 直接放行
-    # 53 端口保留 DNS 接管，853 端口保留阻断
     dip(geoip: private, geoip: cn) && !dport(53, 853) -> direct(must)
-
-    # BT 流量强制直连
-    dscp(4) -> direct(must)
-
-    # Bilibili 及视频 CDN 强制直连
-    domain(geosite: bilibili, suffix: bilibili.com, suffix: bilibili.tv, suffix: bilivideo.com, suffix: bilivideo.cn, suffix: hdslb.com, suffix: b23.tv) -> direct
-
-    # 其他明确属于国内的域名直连
-    domain(geosite: private, geosite: cn, geosite: geolocation-cn) -> direct
-
-    # 阻止非国内 IPv6 流量
-    # 国内 IPv6 已经由前面的规则放行
-    ipversion(6) && !dport(53) -> block
-
-    # 阻断 DoT / DoQ，避免 853 端口绕过 DNS 管控
     dport(853) -> block
-
-    # Google 国内特殊域名
+    l4proto(udp) && dport(443) -> block
     domain(suffix: googleapis.cn, suffix: xn--ngstr-lra8j.com) -> Google
-
-    # AI 服务
     domain(suffix: withgoogle.com, suffix: notebooklm.google, geosite: category-ai-!cn) -> AI
-
-    # YouTube
     domain(geosite: youtube) -> YouTube
-
-    # Google
     domain(geosite: google) -> Google
-
-    # GitHub
     domain(geosite: github) -> Github
-
-    # OneDrive
-    domain(geosite: onedrive) -> OneDrive
-
-    # 中国区 Microsoft
     domain(geosite: microsoft@cn) -> direct
-
-    # Microsoft
     domain(geosite: microsoft) -> Microsoft
-
-    # 中国区 Apple
-    domain(geosite: apple-cn, geosite: apple@cn) -> direct
-
-    # Apple
-    domain(geosite: apple) -> Apple
-
-    # Telegram
+    domain(geosite: apple@cn) -> direct
     domain(geosite: telegram) -> Telegram
-
-    # 金融和加密货币服务
-    domain(geosite: paypal, geosite: binance, geosite: okx, geosite: category-cryptocurrency) -> Wallet
-
-    # 中国区 Steam / 游戏
-    domain(geosite: steam@cn, geosite: category-games@cn) -> direct
-
-    # Steam
+    domain(geosite: steam@cn) -> direct
     domain(geosite: steam) -> Steam
-
-    # 其他海外域名
     domain(geosite: geolocation-!cn) -> Proxy
-
-    # Telegram IP 补充规则
     dip(geoip: telegram) -> Telegram
-
-    # 未匹配流量进入最终策略组
     fallback: Final
 }
-
-# ============================================================
-# 全局参数
-# ============================================================
 
 global {
     lan_interface: br-lan
     wan_interface: auto
-
     data_dir: '/etc/honk'
-
     dial_mode: domain
     tls_implementation: utls
-
-    # Bootstrap 仅用于解析代理/DNS上游等基础设施域名
     bootstrap_resolver: '223.5.5.5:53'
-    fallback_resolver: '119.29.29.29:53'
-
     auto_config_kernel_parameter: true
     nfqueue_enable: true
     store_subscribe: true
-
     log_level: info
-
-    # 仅使用 IPv4 探测目标，避免不支持 IPv6 的代理被误判
-    tcp_check_url: 'http://cp.cloudflare.com', 'http://www.gstatic.com/generate_204'
+    tcp_check_url: 'https://www.gstatic.com/generate_204', 'http://cp.cloudflare.com'
     tcp_check_http_method: HEAD
-
     udp_check_dns: 'dns.google:53', '8.8.8.8:53'
-
     check_interval: 60s
     check_tolerance: 50ms
-
-    # 禁止全量节点预连接与 UDP 预热
     udp_warm_node_count: 0
     preconnect_node_count: 0
 }
-
-# ============================================================
-# 资源下载
-# ============================================================
-
 assets {
     route: direct
-
     subscription {
         ua: 'clash.meta/1.19.30'
         interval: 24h
         cache: true
     }
-
     geodata {
-        geosite: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/release/geosite.dat'
-        geoip: 'https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/release/geoip.dat'
-        route: direct
+        geosite: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/release/geosite.dat'
+        geoip: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/release/geoip.dat'
+        route: Proxy
     }
 }
-
-# ============================================================
-# Doona 面板
-# ============================================================
-
 experimental {
     native_api {
         enabled: true
-        listen: '0.0.0.0:9090'
+        listen: '10.0.0.1:9090'
         password_auth: true
         config_write: true
         ui: embedded
     }
-
     cache_file {
         enabled: true
         store_dns: true
     }
 }
-
