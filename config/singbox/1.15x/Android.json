@@ -550,8 +550,8 @@
         {
             "type": "api",
             "listen": "127.0.0.1",
-            "listen_port": 9999,
-            "secret": "sb",
+            "listen_port": 9090,
+            "secret": "",
             "access_control_allow_private_network": true,
             "dashboard": {
                 "enabled": true
