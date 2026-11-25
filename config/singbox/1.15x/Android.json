@@ -590,7 +590,7 @@
       "access_control_allow_private_network": false,
       "dashboard": {
         "enabled": true,
-        "path": "/data/adb/sing-box/dashboard",
+        "path": "/data/adb/nakedcore/sing-box/dashboard",
         "download_url": "https://github.com/SagerNet/sing-box-dashboard/archive/refs/heads/gh-pages.zip",
         "http_client": "Dashboard下载",
         "update_interval": "7d"
@@ -600,7 +600,7 @@
   "experimental": {
     "cache_file": {
       "enabled": true,
-      "path": "/data/adb/sing-box/cache.db",
+      "path": "/data/adb/nakedcore/sing-box/cache.db",
       "store_dns": false
     }
   },
