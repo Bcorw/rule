@@ -1,0 +1,610 @@
+{
+  "$schema": "https://sing-box.sagernet.org/schema.json",
+  "log": {
+    "disabled": false,
+    "level": "info",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "国内DNS",
+        "type": "https",
+        "server": "223.5.5.5",
+        "server_port": 443,
+        "path": "/dns-query",
+        "tls": {
+          "enabled": true,
+          "server_name": "dns.alidns.com"
+        },
+        "detour": "直连"
+      },
+      {
+        "tag": "代理DNS",
+        "type": "https",
+        "server": "8.8.8.8",
+        "server_port": 443,
+        "path": "/dns-query",
+        "tls": {
+          "enabled": true,
+          "server_name": "dns.google"
+        },
+        "detour": "默认代理"
+      }
+    ],
+    "rules": [
+      {
+        "rule_set": [
+          "geosite-category-ads-all"
+        ],
+        "action": "reject"
+      },
+      {
+        "package_name": [
+          "com.tencent.mm"
+        ],
+        "action": "route",
+        "server": "国内DNS"
+      },
+      {
+        "package_name": [
+          "com.tencent.mm",
+          "com.tencent.mobileqq",
+          "com.tencent.wework",
+          "com.taobao.taobao",
+          "com.tmall.wireless",
+          "com.eg.android.AlipayGphone",
+          "com.ss.android.ugc.aweme",
+          "com.ss.android.article.news",
+          "tv.danmaku.bili",
+          "com.baidu.searchbox",
+          "com.baidu.BaiduMap",
+          "com.autonavi.minimap",
+          "com.xunmeng.pinduoduo",
+          "com.sina.weibo",
+          "com.xingin.xhs",
+          "com.kuaishou.nebula",
+          "com.zhihu.android",
+          "com.tencent.qqlive",
+          "com.qiyi.video",
+          "com.alibaba.android.rimet",
+          "com.jingdong.app.mall",
+          "com.sankuai.meituan",
+          "com.douban.frodo",
+          "com.UCMobile",
+          "com.netease.cloudmusic",
+          "cn.wps.moffice_eng",
+          "com.unionpay",
+          "com.deepseek.chat"
+        ],
+        "action": "route",
+        "server": "国内DNS"
+      },
+      {
+        "domain_suffix": [
+          "weixin.qq.com",
+          "wechat.com",
+          "wx.qq.com",
+          "weixinbridge.com",
+          "wechatpay.cn",
+          "tenpay.com",
+          "qpic.cn",
+          "qlogo.cn",
+          "gtimg.cn",
+          "qq.com"
+        ],
+        "action": "route",
+        "server": "国内DNS"
+      },
+      {
+        "rule_set": [
+          "geosite-private",
+          "geosite-cn",
+          "geosite-microsoft@cn",
+          "Samsung"
+        ],
+        "action": "route",
+        "server": "国内DNS"
+      },
+      {
+        "rule_set": [
+          "geosite-category-ai-!cn",
+          "geosite-youtube",
+          "geosite-google",
+          "geosite-github",
+          "geosite-microsoft",
+          "geosite-telegram",
+          "geosite-geolocation-!cn"
+        ],
+        "action": "route",
+        "server": "代理DNS"
+      }
+    ],
+    "final": "国内DNS",
+    "strategy": "prefer_ipv4",
+    "cache_capacity": 4096,
+    "timeout": "5s",
+    "reverse_mapping": true
+  },
+  "outbounds": [
+    {
+      "tag": "默认代理",
+      "type": "selector",
+      "outbounds": [
+        "香港手动",
+        "日本手动",
+        "狮城手动",
+        "美国手动",
+        "手动选择",
+        "自动选择"
+      ],
+      "default": "香港手动"
+    },
+    {
+      "tag": "AI-Serve",
+      "type": "selector",
+      "outbounds": [
+        "AI手动",
+        "日本手动",
+        "狮城手动",
+        "美国手动"
+      ],
+      "default": "AI手动"
+    },
+    {
+      "tag": "YouTube",
+      "type": "selector",
+      "outbounds": [
+        "日本手动",
+        "狮城手动",
+        "香港手动",
+        "美国手动",
+        "手动选择",
+        "自动选择"
+      ],
+      "default": "日本手动"
+    },
+    {
+      "tag": "Google",
+      "type": "selector",
+      "outbounds": [
+        "狮城手动",
+        "日本手动",
+        "香港手动",
+        "美国手动",
+        "手动选择",
+        "自动选择"
+      ],
+      "default": "狮城手动"
+    },
+    {
+      "tag": "Github",
+      "type": "selector",
+      "outbounds": [
+        "美国手动",
+        "日本手动",
+        "狮城手动",
+        "香港手动",
+        "手动选择",
+        "自动选择"
+      ],
+      "default": "美国手动"
+    },
+    {
+      "tag": "Telegram",
+      "type": "selector",
+      "outbounds": [
+        "自动选择",
+        "香港手动",
+        "日本手动",
+        "狮城手动",
+        "美国手动",
+        "手动选择"
+      ],
+      "default": "自动选择"
+    },
+    {
+      "tag": "Microsoft",
+      "type": "selector",
+      "outbounds": [
+        "直连",
+        "香港手动",
+        "日本手动",
+        "狮城手动",
+        "美国手动",
+        "手动选择",
+        "自动选择"
+      ],
+      "default": "直连"
+    },
+    {
+      "tag": "漏网之鱼",
+      "type": "selector",
+      "outbounds": [
+        "默认代理",
+        "香港手动",
+        "日本手动",
+        "狮城手动",
+        "美国手动",
+        "手动选择",
+        "自动选择",
+        "直连"
+      ],
+      "default": "默认代理"
+    },
+    {
+      "tag": "AI手动",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "日本手动",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "狮城手动",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "香港手动",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "美国手动",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "手动选择",
+      "type": "selector",
+      "outbounds": []
+    },
+    {
+      "tag": "自动选择",
+      "type": "urltest",
+      "outbounds": [],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "30m",
+      "tolerance": 100
+    },
+    {
+      "tag": "直连",
+      "type": "direct",
+      "domain_resolver": "国内DNS"
+    }
+  ],
+  "http_clients": [
+    {
+      "tag": "规则下载",
+      "detour": "直连"
+    },
+    {
+      "tag": "Dashboard下载",
+      "detour": "默认代理"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "port": 53,
+        "action": "hijack-dns"
+      },
+      {
+        "port": 853,
+        "action": "reject",
+        "no_drop": true
+      },
+      {
+        "action": "sniff",
+        "sniffer": [
+          "http",
+          "tls",
+          "quic",
+          "stun",
+          "dns"
+        ],
+        "timeout": "300ms"
+      },
+      {
+        "ip_is_private": true,
+        "action": "route",
+        "outbound": "直连"
+      },
+      {
+        "domain_suffix": [
+          "weixin.qq.com",
+          "wechat.com",
+          "wx.qq.com",
+          "weixinbridge.com",
+          "wechatpay.cn",
+          "tenpay.com",
+          "qpic.cn",
+          "qlogo.cn",
+          "gtimg.cn",
+          "qq.com"
+        ],
+        "action": "route",
+        "outbound": "直连"
+      },
+      {
+        "domain_suffix": [
+          "dns.google",
+          "cloudflare-dns.com",
+          "one.one.one.one",
+          "dns.quad9.net",
+          "doh.opendns.com",
+          "dns.nextdns.io",
+          "dns.adguard-dns.com",
+          "doh.pub",
+          "dns.pub"
+        ],
+        "action": "reject",
+        "no_drop": true
+      },
+      {
+        "package_name": [
+          "com.tencent.mm",
+          "com.tencent.mobileqq",
+          "com.tencent.wework",
+          "com.taobao.taobao",
+          "com.tmall.wireless",
+          "com.eg.android.AlipayGphone",
+          "com.ss.android.ugc.aweme",
+          "com.ss.android.article.news",
+          "tv.danmaku.bili",
+          "com.baidu.searchbox",
+          "com.baidu.BaiduMap",
+          "com.autonavi.minimap",
+          "com.xunmeng.pinduoduo",
+          "com.sina.weibo",
+          "com.xingin.xhs",
+          "com.kuaishou.nebula",
+          "com.zhihu.android",
+          "com.tencent.qqlive",
+          "com.qiyi.video",
+          "com.alibaba.android.rimet",
+          "com.jingdong.app.mall",
+          "com.sankuai.meituan",
+          "com.douban.frodo",
+          "com.UCMobile",
+          "com.netease.cloudmusic",
+          "cn.wps.moffice_eng",
+          "com.unionpay",
+          "com.deepseek.chat"
+        ],
+        "action": "route",
+        "outbound": "直连"
+      },
+      {
+        "rule_set": "geosite-private",
+        "action": "route",
+        "outbound": "直连"
+      },
+      {
+        "rule_set": "geosite-category-ads-all",
+        "action": "reject"
+      },
+      {
+        "package_name": [
+          "com.android.vending",
+          "com.google.android.gms",
+          "com.google.android.gsf",
+          "com.google.android.providers.downloads",
+          "com.google.android.providers.downloads.ui",
+          "com.google.android.apps.maps",
+          "com.google.android.gm",
+          "com.google.android.apps.docs",
+          "com.google.android.apps.photos",
+          "com.google.android.apps.translate",
+          "com.google.android.keep"
+        ],
+        "action": "route",
+        "outbound": "Google"
+      },
+      {
+        "package_name": [
+          "com.openai.chatgpt",
+          "com.anthropic.claude",
+          "ai.perplexity.app.android",
+          "com.google.android.apps.bard",
+          "com.larus.wolf"
+        ],
+        "action": "route",
+        "outbound": "AI-Serve"
+      },
+      {
+        "package_name": [
+          "com.google.android.youtube",
+          "com.google.android.apps.youtube.music"
+        ],
+        "action": "route",
+        "outbound": "YouTube"
+      },
+      {
+        "package_name": [
+          "org.telegram.messenger",
+          "org.telegram.messenger.web",
+          "org.telegram.group",
+          "org.thunderdog.challegram"
+        ],
+        "action": "route",
+        "outbound": "Telegram"
+      },
+      {
+        "package_name": [
+          "com.twitter.android",
+          "com.instagram.android",
+          "com.facebook.katana",
+          "com.facebook.orca",
+          "com.whatsapp",
+          "com.discord",
+          "com.reddit.frontpage",
+          "com.spotify.music",
+          "com.netflix.mediaclient",
+          "com.snapchat.android",
+          "com.zhiliaoapp.musically",
+          "com.ss.android.ugc.trill"
+        ],
+        "action": "route",
+        "outbound": "默认代理"
+      },
+      {
+        "rule_set": "geosite-category-ai-!cn",
+        "action": "route",
+        "outbound": "AI-Serve"
+      },
+      {
+        "rule_set": "geosite-youtube",
+        "action": "route",
+        "outbound": "YouTube"
+      },
+      {
+        "rule_set": "geosite-google",
+        "action": "route",
+        "outbound": "Google"
+      },
+      {
+        "rule_set": "geosite-github",
+        "action": "route",
+        "outbound": "Github"
+      },
+      {
+        "rule_set": "geosite-microsoft@cn",
+        "action": "route",
+        "outbound": "直连"
+      },
+      {
+        "rule_set": "geosite-microsoft",
+        "action": "route",
+        "outbound": "Microsoft"
+      },
+      {
+        "rule_set": "geosite-telegram",
+        "action": "route",
+        "outbound": "Telegram"
+      },
+      {
+        "rule_set": "geoip-telegram",
+        "action": "route",
+        "outbound": "Telegram"
+      },
+      {
+        "rule_set": "geosite-cn",
+        "action": "route",
+        "outbound": "直连"
+      },
+      {
+        "rule_set": "geoip-cn",
+        "action": "route",
+        "outbound": "直连"
+      },
+      {
+        "rule_set": "geosite-geolocation-!cn",
+        "action": "route",
+        "outbound": "默认代理"
+      }
+    ],
+    "rule_set": [
+      {
+        "tag": "Samsung",
+        "type": "remote",
+        "format": "source",
+        "url": "https://gh-proxy.com/https://raw.githubusercontent.com/Bcorw/rule/refs/heads/main/rules/Samsung.json",
+        "update_interval": "72h",
+        "http_client": "规则下载"
+      },
+      {
+        "tag": [
+          "geosite-category-ai-!cn",
+          "geosite-youtube",
+          "geosite-google",
+          "geosite-github",
+          "geosite-microsoft",
+          "geosite-microsoft@cn",
+          "geosite-telegram",
+          "geosite-geolocation-!cn",
+          "geosite-cn",
+          "geosite-private",
+          "geosite-category-ads-all"
+        ],
+        "type": "remote",
+        "format": "binary",
+        "url": "https://gh-proxy.com/https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/{tag}.srs",
+        "update_interval": "72h",
+        "http_client": "规则下载"
+      },
+      {
+        "tag": "geoip-telegram",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://gh-proxy.com/https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geoip/telegram.srs",
+        "update_interval": "72h",
+        "http_client": "规则下载"
+      },
+      {
+        "tag": "geoip-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://gh-proxy.com/https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+        "update_interval": "72h",
+        "http_client": "规则下载"
+      }
+    ],
+    "final": "漏网之鱼",
+    "default_http_client": "规则下载",
+    "default_domain_resolver": "国内DNS"
+  },
+  "inbounds": [
+    {
+      "tag": "tun-in",
+      "type": "tun",
+      "address": [
+        "172.19.0.1/30",
+        "fdfe:dcba:9876::1/126"
+      ],
+      "dns_mode": "hijack",
+      "dns_address": [
+        "172.19.0.2",
+        "fdfe:dcba:9876::2"
+      ],
+      "mtu": 1400,
+      "auto_route": true,
+      "auto_redirect": true,
+      "udp_timeout": "5m",
+      "udp_nat_max": 4096,
+      "udp_mapping": "endpoint_independent",
+      "exclude_package": [
+        "com.tencent.mm"
+      ]
+    }
+  ],
+  "services": [
+    {
+      "type": "api",
+      "listen": "127.0.0.1",
+      "listen_port": 9090,
+      "secret": "Android",
+      "access_control_allow_private_network": false,
+      "dashboard": {
+        "enabled": true,
+        "path": "/data/adb/sing-box/dashboard",
+        "download_url": "https://github.com/SagerNet/sing-box-dashboard/archive/refs/heads/gh-pages.zip",
+        "http_client": "Dashboard下载",
+        "update_interval": "7d"
+      }
+    }
+  ],
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "path": "/data/adb/sing-box/cache.db",
+      "store_dns": false
+    }
+  },
+  "certificate": {
+    "store": "mozilla"
+  }
+}
