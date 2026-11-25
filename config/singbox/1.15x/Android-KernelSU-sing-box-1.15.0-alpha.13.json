@@ -856,7 +856,7 @@
       "type": "api",
       "listen": "127.0.0.1",
       "listen_port": 9090,
-      "secret": "REPLACE_WITH_ANDROID_API_SECRET",
+      "secret": "Android",
       "access_control_allow_private_network": false,
       "dashboard": {
         "enabled": true,
