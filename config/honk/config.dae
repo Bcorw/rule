@@ -1,333 +1,165 @@
-
 # ============================================================
-# honk-core v0.1.0-beta.7
+# honk-core v0.1.0-beta.7 (IPv4-Only / Play & DNS Optimized)
 # OpenWrt / Guangzhou / IPv4 only
 # LAN: 10.0.0.1 / br-lan
-# VMess subscriptions: L + K
-# ============================================================
-
-global {
-    wan_interface: auto
-    lan_interface: br-lan
-
-    log_level: info
-    log_file: ''
-
-    dial_mode: domain++
-    allow_insecure: false
-
-    auto_config_kernel_parameter: true
-    data_dir: '/etc/honk/data'
-
-    tcp_check_url: 'https://www.gstatic.com/generate_204'
-    tcp_check_http_method: HEAD
-    check_interval: 300s
-
-    # Bootstrap DNS for VMess node server hostnames.
-    # This is separate from LAN client DNS routing.
-    bootstrap_resolver: '223.5.5.5:53'
-
-    store_subscribe: true
-    nfqueue_enable: true
-}
-
-# ============================================================
-# SUBSCRIPTIONS
-# Replace these two URLs with your real subscription URLs.
-# Keep the tags L and K unchanged.
 # ============================================================
 
 subscription {
     L: {
         url: ''
-        interval: 24h
+        route: direct
     }
     K: {
         url: ''
-        interval: 24h
+        route: direct
     }
 }
 
-# ============================================================
-# DNS
-# Mainland China: AliDNS DoH, direct.
-# Overseas: Google DoH, through the VMess proxy group.
-# DoH endpoints use IP literals to avoid DNS bootstrap loops.
-# ============================================================
-
-dns {
-    use_host: true
-    ipversion_prefer: 4
-
-    upstream {
-        # Mainland China DNS over HTTPS.
-        cn_doh: 'https://223.5.5.5/dns-query?tls_server_name=dns.alidns.com' -> direct
-
-        # Overseas DNS over HTTPS.
-        # DoH uses TCP/443, which VMess supports.
-        remote_doh: 'https://8.8.8.8/dns-query?tls_server_name=dns.google' -> proxy
-    }
-
-    routing {
-        request {
-
-            # IPv4-only DNS behavior.
-            # ipversion_prefer: 4 alone is only a preference.
-            qtype(aaaa) -> reject
-
-            # Google Play download / update infrastructure.
-            qname('regex: (^|\\.)(play\\.google\\.com|play\\.googleapis\\.com|play-fe\\.googleapis\\.com|android\\.clients\\.google\\.com|dl\\.google\\.com|gvt1\\.com|gvt2\\.com|gvt3\\.com|googleusercontent\\.com)$') -> remote_doh
-
-            # YouTube.
-            qname(geosite: youtube) -> remote_doh
-
-            # Gemini.
-            qname('regex: (^|\\.)(gemini\\.google\\.com|bard\\.google\\.com|generativelanguage\\.googleapis\\.com|aistudio\\.google\\.com|ai\\.google\\.dev)$') -> remote_doh
-
-            # GitHub.
-            qname('regex: (^|\\.)(github\\.com|githubusercontent\\.com|githubassets\\.com|github\\.io|github\\.dev|githubcopilot\\.com)$') -> remote_doh
-
-            # OpenAI / ChatGPT.
-            qname('regex: (^|\\.)(openai\\.com|chatgpt\\.com|oaistatic\\.com|oaiusercontent\\.com)$') -> remote_doh
-
-            # Anthropic / Claude.
-            qname('regex: (^|\\.)(anthropic\\.com|claude\\.ai|claude\\.com|claudeusercontent\\.com)$') -> remote_doh
-
-            # Telegram.
-            qname('regex: (^|\\.)(telegram\\.org|telegram\\.me|telegram\\.dog|t\\.me|telegra\\.ph|telesco\\.pe)$') -> remote_doh
-
-            # Steam.
-            qname('regex: (^|\\.)(steampowered\\.com|steamcommunity\\.com|steamstatic\\.com|steamcontent\\.com|steamserver\\.net|steam-chat\\.com|steamgames\\.com|steamusercontent\\.com|steam\\.tv|valve\\.net|steamcdn-a\\.akamaihd\\.net)$') -> remote_doh
-
-            # General Google services.
-            qname(geosite: google) -> remote_doh
-
-            # Mainland China domain classification.
-            qname(geosite: geolocation-cn) -> cn_doh
-
-            # Other known GFW domains.
-            qname(geosite: gfw) -> remote_doh
-
-            # Unknown domains default to domestic DNS.
-            fallback: cn_doh
-        }
-
-        response {
-            # Never re-query an already proxied DNS answer.
-            upstream(remote_doh) -> accept
-
-            # Preserve local/private and mainland China answers.
-            qname(geosite: private) -> accept
-            qname(geosite: geolocation-cn) -> accept
-            ip(geoip: cn) -> accept
-
-            # Re-query non-China answers from the domestic resolver
-            # through overseas DNS to reduce pollution.
-            fallback: remote_doh
-        }
-    }
-}
-
-# ============================================================
-# PROXY GROUPS
-# All application groups have independent manual selection.
-# final: block prevents accidental DIRECT fallback.
-# ============================================================
-
+# policy 可选 select（面板手动选，默认）/ min_moving_avg（延迟最低）/ fallback（按顺序取第一个存活）/ loadbalance（轮询）/ score（按实际连接质量评分）；final：所选节点不可用时改走的组
 group {
-
-    # General overseas services.
-    proxy {
-        filter: subtag(L, K) && !name(regex: '(?i)(流量|剩余|距离|套餐|到期|官网|排除|expire|traffic)')
+    Proxy {
+        filter: subtag('L', 'K') && !name(regex: '排除')
         policy: score
-        final: '🇸🇬新加坡高速05|BGP|CTCUCM'
+        final: Final
         interrupt_connections: true
     }
-
-    Google {
-        filter: subtag(L, K) && !name(regex: '(?i)(流量|剩余|距离|套餐|到期|官网|排除|expire|traffic)')
+    AI {
+        filter: subtag('K') && !name(regex: '排除')
         policy: selector
-        final: block
+        default: '🇯🇵Japan 03'
+        final: Final
+        interrupt_connections: true
     }
-
     YouTube {
-        filter: subtag(L, K) && !name(regex: '(?i)(流量|剩余|距离|套餐|到期|官网|排除|expire|traffic)')
+        filter: subtag('L', 'K') && !name(regex: '排除|剩余')
         policy: score
-        final: block
+        default: '🇸🇬新加坡高速05|BGP|CTCUCM'
+        final: Final
+        interrupt_connections: true
     }
-
-    Gemini {
-        filter: subtag(L, K) && !name(regex: '(?i)(流量|剩余|距离|套餐|到期|官网|排除|expire|traffic)')
-        policy: selector
-        final: block
+    Google {
+        filter: subtag('L', 'K') && !name(regex: '排除|剩余')
+        final: Final
+        interrupt_connections: true
     }
-
-    GitHub {
-        filter: subtag(L, K) && !name(regex: '(?i)(流量|剩余|距离|套餐|到期|官网|排除|expire|traffic)')
+    Github {
+        filter: subtag('L', 'K') && !name(regex: '排除|剩余')
         policy: score
-        final: block
+        final: Final
+        interrupt_connections: true
     }
-
-    OpenAI {
-        filter: subtag(K) && !name(regex: '(?i)(流量|剩余|距离|套餐|到期|官网|排除|expire|traffic)')
-        policy: selector
-        final: block
-    }
-
-    Anthropic {
-        filter: subtag(L, K) && !name(regex: '(?i)(流量|剩余|距离|套餐|到期|官网|排除|expire|traffic)')
-        policy: selector
-        final: block
-    }
-
     Telegram {
-        filter: subtag(L, K) && !name(regex: '(?i)(流量|剩余|距离|套餐|到期|官网|排除|expire|traffic)')
+        filter: subtag('L', 'K') && !name(regex: '流量|剩余|距离|套餐|到期|官网|排除|官方|直连|expire|traffic')
         policy: score
-        final: block
+        final: Final
+        interrupt_connections: true
     }
-
+    TikTok {
+        filter: subtag('L', 'K') && !name(regex: '流量|剩余|距离|套餐|到期|官网|排除|官方|直连|expire|traffic')
+        final: Final
+        interrupt_connections: true
+    }
+    Netflix {
+        filter: subtag('L', 'K') && !name(regex: '流量|剩余|距离|套餐|到期|官网|排除|官方|直连|expire|traffic')
+        final: Final
+        interrupt_connections: true
+    }
+    Wallet {
+        filter: subtag('L', 'K') && !name(regex: '流量|剩余|距离|套餐|到期|官网|排除|官方|直连|expire|traffic')
+        final: Final
+        interrupt_connections: true
+    }
     Steam {
-        filter: subtag(L, K) && !name(regex: '(?i)(流量|剩余|距离|套餐|到期|官网|排除|expire|traffic)')
-        policy: selector
-        final: block
+        filter: subtag('L', 'K') && !name(regex: '流量|剩余|距离|套餐|到期|官网|排除|官方|直连|expire|traffic')
+        final: Final
+        interrupt_connections: true
+    }
+    Microsoft {
+        filter: subtag('L', 'K') && !name(regex: '流量|剩余|距离|套餐|到期|官网|排除|官方|直连|expire|traffic')
+        final: Final
+        interrupt_connections: true
+    }
+    OneDrive {
+        filter: subtag('L', 'K') && !name(regex: '流量|剩余|距离|套餐|到期|官网|排除|官方|直连|expire|traffic')
+        final: Final
+        interrupt_connections: true
+    }
+    Apple {
+        filter: subtag('L', 'K') && !name(regex: '流量|剩余|距离|套餐|到期|官网|排除|官方|直连|expire|traffic')
+        final: Final
+        interrupt_connections: true
+    }
+    Final {
+        filter: !name(regex: '流量|剩余|距离|套餐|到期|官网|排除|官方|直连|expire|traffic')
+        policy: score
     }
 }
 
-# ============================================================
-# ROUTING
-# Rule order matters. More specific rules come first.
-# ============================================================
+dns {
+    upstream {
+        remote: 'https://8.8.8.8/dns-query'
+        local: 'https://223.5.5.5/dns-query'
+    }
+    routing {
+        request {
+            qtype(https, svcb) -> reject
+            qtype(aaaa) -> reject
+            qname(suffix: googleapis.cn, suffix: xn--ngstr-lra8j.com) -> remote
+            qname(geosite: cn, geosite: microsoft@cn, geosite: apple@cn, geosite: private) -> local
+            qname(geosite: geolocation-!cn) -> remote
+            fallback: remote
+        }
+        response {
+            # remote 解析出国内 IP 时改用 local 重查，拿到就近 CDN
+            upstream(remote) && ip(geoip: cn) -> local
+            fallback: accept
+        }
+    }
+}
 
 routing {
-
-    # --------------------------------------------------------
-    # 1. LAN / private destinations
-    # Keep DNS port 53 out of this must-direct rule.
-    # This is essential for transparent DNS interception.
-    # --------------------------------------------------------
-
-    dip(geoip: private) && !dport(53) -> direct(must)
-    dip(224.0.0.0/4, 255.255.255.255/32) -> direct(must)
-
-    # --------------------------------------------------------
-    # 2. DNS leak prevention
-    # Block DNS over TLS / DNS over QUIC.
-    # --------------------------------------------------------
-
+    dip(geoip: private, geoip: cn) && !dport(53, 853) -> direct(must)
     dport(853) -> block
-
-    # --------------------------------------------------------
-    # 3. VMess has no UDP transport.
-    # Disable QUIC so applications can try TCP instead.
-    # This applies globally to UDP/443.
-    # --------------------------------------------------------
-
     l4proto(udp) && dport(443) -> block
-
-    # --------------------------------------------------------
-    # 4. YouTube
-    # Must precede the general Google rule.
-    # --------------------------------------------------------
-
+    domain(suffix: googleapis.cn, suffix: xn--ngstr-lra8j.com) -> Google
+    domain(suffix: withgoogle.com, suffix: notebooklm.google, geosite: category-ai-!cn) -> AI
     domain(geosite: youtube) -> YouTube
-
-    domain(regex: '(^|\\.)(youtube-nocookie\\.com|youtu\\.be|ytimg\\.com|googlevideo\\.com|youtubei\\.googleapis\\.com)$') -> YouTube
-
-    # --------------------------------------------------------
-    # 5. Gemini
-    # Must precede the general Google rule.
-    # --------------------------------------------------------
-
-    domain(regex: '(^|\\.)(gemini\\.google\\.com|bard\\.google\\.com|generativelanguage\\.googleapis\\.com|aistudio\\.google\\.com|ai\\.google\\.dev)$') -> Gemini
-
-    # --------------------------------------------------------
-    # 6. Google Play / Google downloads
-    # Explicit download endpoints plus general Google domains.
-    # --------------------------------------------------------
-
-    domain(regex: '(^|\\.)(play\\.google\\.com|play\\.googleapis\\.com|play-fe\\.googleapis\\.com|android\\.clients\\.google\\.com|dl\\.google\\.com|gvt1\\.com|gvt2\\.com|gvt3\\.com|googleusercontent\\.com)$') -> Google
-
     domain(geosite: google) -> Google
-
-    # --------------------------------------------------------
-    # 7. GitHub
-    # --------------------------------------------------------
-
-    domain(regex: '(^|\\.)(github\\.com|githubusercontent\\.com|githubassets\\.com|github\\.io|github\\.dev|githubcopilot\\.com)$') -> GitHub
-
-    # --------------------------------------------------------
-    # 8. OpenAI / ChatGPT
-    # --------------------------------------------------------
-
-    domain(regex: '(^|\\.)(openai\\.com|chatgpt\\.com|oaistatic\\.com|oaiusercontent\\.com)$') -> OpenAI
-
-    # --------------------------------------------------------
-    # 9. Anthropic / Claude
-    # --------------------------------------------------------
-
-    domain(regex: '(^|\\.)(anthropic\\.com|claude\\.ai|claude\\.com|claudeusercontent\\.com)$') -> Anthropic
-
-    # --------------------------------------------------------
-    # 10. Telegram
-    # --------------------------------------------------------
-
-    domain(regex: '(^|\\.)(telegram\\.org|telegram\\.me|telegram\\.dog|t\\.me|telegra\\.ph|telesco\\.pe)$') -> Telegram
-
-    # IP-based Telegram routing.
-    dip(geoip: telegram) -> Telegram
-
-    # --------------------------------------------------------
-    # 11. Steam
-    # Mainland China gaming domains stay DIRECT.
-    # --------------------------------------------------------
-
+    domain(geosite: github) -> Github
+    domain(geosite: onedrive) -> OneDrive
+    domain(geosite: microsoft@cn) -> direct
+    domain(geosite: microsoft) -> Microsoft
+    domain(geosite: apple@cn) -> direct
+    domain(geosite: apple) -> Apple
+    domain(geosite: telegram) -> Telegram
+    domain(geosite: tiktok) -> TikTok
+    domain(geosite: netflix) -> Netflix
+    domain(geosite: paypal, geosite: binance, geosite: okx, geosite: category-cryptocurrency) -> Wallet
     domain(geosite: steam@cn) -> direct
-    domain(geosite: category-games@cn) -> direct
-
-    domain(regex: '(^|\\.)(steampowered\\.com|steamcommunity\\.com|steamstatic\\.com|steamcontent\\.com|steamserver\\.net|steam-chat\\.com|steamgames\\.com|steamusercontent\\.com|steam\\.tv|valve\\.net|steamcdn-a\\.akamaihd\\.net)$') -> Steam
-
-    # --------------------------------------------------------
-    # 12. Common external DNS-over-HTTPS providers.
-    # Keep their HTTPS connections away from the direct WAN path.
-    # --------------------------------------------------------
-
-    domain(regex: '(^|\\.)(dns\\.cloudflare\\.com|cloudflare-dns\\.com|dns\\.quad9\\.net|dns\\.nextdns\\.io)$') -> proxy
-
-    # --------------------------------------------------------
-    # 13. Mainland China
-    # --------------------------------------------------------
-
-    domain(geosite: geolocation-cn) -> direct
-    dip(geoip: cn) -> direct
-
-    # --------------------------------------------------------
-    # 14. Other known GFW domains
-    # --------------------------------------------------------
-
-    domain(geosite: gfw) -> proxy
-
-    # --------------------------------------------------------
-    # 15. Unknown traffic
-    # Conservative default: DIRECT.
-    # --------------------------------------------------------
-
-    fallback: direct
+    domain(geosite: steam) -> Steam
+    domain(geosite: geolocation-!cn) -> Proxy
+    dip(geoip: telegram) -> Telegram
+    fallback: Final
 }
 
-# ============================================================
-# EXPERIMENTAL / NATIVE API
-# LAN-only administration. No WAN listener.
-# ============================================================
+global {
+    lan_interface: br-lan
+    wan_interface: auto
+    data_dir: '/etc/honk'
+    dial_mode: domain
+    tls_implementation: utls
+    bootstrap_resolver: '119.29.29.29:53'
+    log_level: info
+    check_interval: 30s
+    check_tolerance: 50ms
+}
 
 experimental {
-
     native_api {
         enabled: true
         listen: '10.0.0.1:9527'
-
         password_auth: true
         config_write: true
-
         ui: 'embedded'
     }
 
